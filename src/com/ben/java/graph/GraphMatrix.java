@@ -20,7 +20,15 @@ public class GraphMatrix {
     /**
      * 最大权值边界
      */
-    public static final int MAX_WEIGHT = Integer.MAX_VALUE;
+    public static final int MAX_WEIGHT = 99999;
+
+    public int getVertexSize() {
+        return vertexSize;
+    }
+
+    public int[][] getVertexMatrix() {
+        return vertexMatrix;
+    }
 
     public GraphMatrix(int vertexSize) {
         this.vertexSize = vertexSize;

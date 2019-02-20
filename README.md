@@ -156,3 +156,81 @@ public void prim() {
     System.out.println("最小生成树权值和：" + weightSum);
 }
 ```
+
+## 使用迪杰斯特拉算法实现路径规划
+
+<img src="./dijkstra.png" width="600px" height="400px"/>
+
+```
+/**
+ * 使用迪杰斯特拉算法查找图中的最短路径并记录路径点
+ *
+ * @param graphMatrix
+ */
+public void shortestPath2(GraphMatrix graphMatrix) {
+    if (graphMatrix == null) {
+        throw new NullPointerException();
+    }
+    visited = new boolean[graphMatrix.getVertexSize()];
+    //最短路径集合
+    Path[] shortestPath = new Path[graphMatrix.getVertexSize()];
+    //路径顶点集合
+    List<Integer> vertexs = new ArrayList<>();
+    //标注当前顶点位置
+    int min = GraphMatrix.MAX_WEIGHT;
+    int minId = 0;
+    //初始化最短路径集合
+    for (int i = 0; i < graphMatrix.getVertexSize(); i++) {
+        Path path = new Path();
+        path.setWeight(graphMatrix.getVertexMatrix()[0][i]);
+        path.setStart(0);
+        path.setEnd(i);
+        shortestPath[i] = path;
+    }
+
+    //遍历矩阵中各个顶点
+    for (int i = 0; i < graphMatrix.getVertexSize(); i++) {
+        min = GraphMatrix.MAX_WEIGHT;
+        //在最短路径集合中查找最小顶点边,且已遍历过的点不可被重复遍历
+        for (int j = 1; j < graphMatrix.getVertexSize(); j++) {
+            if (shortestPath[j].getWeight() < min && !visited[j]) {
+                min = shortestPath[j].getWeight();
+                minId = j;
+            }
+        }
+        //标记顶点为minId的点已被遍历
+        visited[minId] = true;
+        vertexs.add(minId);
+        //在顶点为minId的点中进行比较，如果最短路径集合中的Vx+Vy>Vx 则替换最短路径中的Vx为Vy
+        for (int j = 0; j < graphMatrix.getVertexSize(); j++) {
+            if (!visited[j] && (min + graphMatrix.getVertexMatrix()[minId][j]) < shortestPath[j].getWeight()) {
+                //replace
+                shortestPath[j].setWeight(min + graphMatrix.getVertexMatrix()[minId][j]);
+                shortestPath[j].getPaths().clear();
+                shortestPath[j].getPaths().addAll(vertexs);
+                //添加起点和终点
+                shortestPath[j].getPaths().addFirst(shortestPath[j].getStart());
+                shortestPath[j].getPaths().addLast(shortestPath[j].getEnd());
+            }
+        }
+
+
+    }
+
+    for (int i = 0; i < shortestPath.length; i++) {
+        System.out.println("起始顶点" + shortestPath[i].getStart() + " --> V" + i + "最短路径权值为：" + shortestPath[i].getWeight() + "  路径为：" + Arrays.toString(shortestPath[i].getPaths().toArray()));
+    }
+}
+```
+## Test Log
+```
+起始顶点0 --> V0最短路径权值为：0  路径为：[]
+起始顶点0 --> V1最短路径权值为：1  路径为：[]
+起始顶点0 --> V2最短路径权值为：4  路径为：[0, 1, 2]
+起始顶点0 --> V3最短路径权值为：7  路径为：[0, 1, 2, 4, 3]
+起始顶点0 --> V4最短路径权值为：5  路径为：[0, 1, 2, 4]
+起始顶点0 --> V5最短路径权值为：8  路径为：[0, 1, 2, 4, 5]
+起始顶点0 --> V6最短路径权值为：10  路径为：[0, 1, 2, 4, 3, 6]
+起始顶点0 --> V7最短路径权值为：12  路径为：[0, 1, 2, 4, 3, 5, 6, 7]
+起始顶点0 --> V8最短路径权值为：16  路径为：[0, 1, 2, 4, 3, 5, 6, 7, 8]
+```
